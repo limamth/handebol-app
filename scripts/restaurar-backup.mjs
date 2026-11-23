@@ -14,7 +14,7 @@ import { pathToFileURL } from "node:url";
 import { createClient } from "@supabase/supabase-js";
 
 export const ORDEM_RESTAURACAO = [
-  "clubes", "usuarios", "equipas", "membros_equipa", "diagramas", "exercicios", "sessoes", "sessao_exercicios", "presencas",
+  "clubes", "usuarios", "configuracoes_modulos", "equipas", "membros_equipa", "diagramas", "exercicios", "sessoes", "sessao_exercicios", "presencas",
   "definicoes_teste", "resultados_teste", "questionarios", "respostas_questionario", "fases_treinamento", "fase_convocados",
   "rpe_sessao", "sessoes_forca", "shootout_goleiros", "shootout_sessoes", "shootout_batidas",
 ];

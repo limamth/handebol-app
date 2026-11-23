@@ -2,10 +2,12 @@ import { redirect } from "next/navigation";
 import { obterPerfil } from "@/lib/sessao";
 import { podeEditar, podeVer } from "@/lib/permissions";
 import { AbasShootout } from "@/components/shootout/AbasShootout";
+import { exigirModuloAtivo } from "@/lib/configuracoes";
 
 export default async function ShootoutLayout({ children }: { children: React.ReactNode }) {
   const { perfil } = await obterPerfil();
   if (!podeVer(perfil.papel, "shootout")) redirect("/dashboard");
+  await exigirModuloAtivo("shootout");
 
   return (
     <div className="mx-auto max-w-5xl space-y-5">

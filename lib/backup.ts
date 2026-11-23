@@ -2,7 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 // Na ordem em que precisam ser restauradas (as tabelas "pai" vêm antes). Não inclui os códigos de acesso.
 export const TABELAS_BACKUP = [
-  "clubes", "usuarios", "equipas", "membros_equipa", "diagramas", "exercicios", "sessoes", "sessao_exercicios", "presencas",
+  "clubes", "usuarios", "configuracoes_modulos", "equipas", "membros_equipa", "diagramas", "exercicios", "sessoes", "sessao_exercicios", "presencas",
   "definicoes_teste", "resultados_teste", "questionarios", "respostas_questionario", "fases_treinamento", "fase_convocados",
   "rpe_sessao", "sessoes_forca", "shootout_goleiros", "shootout_sessoes", "shootout_batidas",
 ];
@@ -10,7 +10,7 @@ export const TABELAS_BACKUP = [
 // Ordem usada na leitura em páginas (precisa ser estável). A maioria das tabelas tem "id".
 const ORDEM: Record<string, string[]> = {
   membros_equipa: ["equipa_id", "usuario_id"], sessao_exercicios: ["sessao_id", "ordem"], presencas: ["sessao_id", "atleta_id"],
-  fase_convocados: ["fase_id", "atleta_id"], shootout_goleiros: ["atleta_id"],
+  fase_convocados: ["fase_id", "atleta_id"], shootout_goleiros: ["atleta_id"], configuracoes_modulos: ["clube_id", "modulo"],
 };
 
 // O banco devolve no máximo 1000 linhas por consulta, então lemos em páginas

@@ -4,6 +4,7 @@ import { obterPerfil } from "@/lib/sessao";
 import { podeEditar, podeVer } from "@/lib/permissions";
 import { chaveDia, dataLonga } from "@/lib/datas";
 import { Aviso } from "@/components/ui/Aviso";
+import { carregarDesativados } from "@/lib/configuracoes";
 import { COR_TIPO, ROTULO_PRESENCA, ROTULO_TIPO } from "@/components/calendario/tipos";
 import { salvarPresencas, excluirSessao, adicionarExercicio, removerExercicio, salvarMeuRpe } from "../../actions";
 import { ROTULO_RPE } from "@/components/monitorizacao/escalas";
@@ -11,6 +12,7 @@ import { hojeChave, somarDias } from "@/lib/periodo";
 
 export default async function DetalheSessao({ params, searchParams }: { params: { id: string }; searchParams: { erro?: string; aviso?: string } }) {
   const { supabase, perfil } = await obterPerfil();
+  const desativados = await carregarDesativados();
 
   const { data: sessao } = await supabase
     .from("sessoes")
@@ -34,7 +36,7 @@ export default async function DetalheSessao({ params, searchParams }: { params: 
   // RPE registrado pelo próprio atleta: só para convocados, em sessões de uma fase de treinamento
   const diaSessao = chaveDia(sessao.inicio);
   let rpeAtleta: { mensagem: string | null; registro: { rpe: number; minutos: number } | null } | null = null;
-  if (perfil.papel === "atleta") {
+  if (perfil.papel === "atleta" && !desativados.includes("monitorizacao")) {
     const { data: fasesDoDia } = await supabase.from("fases_treinamento").select("id, nome").lte("inicio", diaSessao).gte("fim", diaSessao);
     if ((fasesDoDia ?? []).length > 0) {
       const [{ data: convocado }, { data: registro }] = await Promise.all([
@@ -62,7 +64,7 @@ export default async function DetalheSessao({ params, searchParams }: { params: 
         <h1 className="mt-2 font-titulo text-3xl font-bold">{sessao.titulo}</h1>
         <p className="text-suave">{dataLonga(sessao.inicio)} · {sessao.duracao_min} min</p>
         <p className="text-suave">{equipaNome}{sessao.local ? ` · ${sessao.local}` : ""}{sessao.adversario ? ` · contra ${sessao.adversario}` : ""}</p>
-        {podeVer(perfil.papel, "monitorizacao") && (
+        {podeVer(perfil.papel, "monitorizacao") && !desativados.includes("monitorizacao") && (
           <p className="mt-3"><Link href={`/monitorizacao/rpe/${sessao.id}`} className="text-quadra-600 underline">Registrar carga (RPE) desta sessão</Link></p>
         )}
       </header>

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { obterPerfil } from "@/lib/sessao";
 import { InicioAtleta } from "./InicioAtleta";
+import { carregarDesativados } from "@/lib/configuracoes";
 import { CartaoIndicador } from "@/components/dashboard/CartaoIndicador";
 import { GraficoCarga } from "@/components/dashboard/GraficoCarga";
 import { calcularMonitorizacao } from "@/lib/monitorizacao";
@@ -12,6 +13,8 @@ const quando = (iso: string) => new Intl.DateTimeFormat("pt-BR", { timeZone: FUS
 export default async function Dashboard() {
   const { supabase, perfil } = await obterPerfil();
   if (perfil.papel === "atleta") return <InicioAtleta supabase={supabase} perfil={perfil} />;
+  const desativados = await carregarDesativados();
+  const off = (m: string) => desativados.includes(m);
 
   // Lembrete para o gestor: faz tempo desde o último backup?
   let diasDesdeBackup: number | null = null;
@@ -54,17 +57,20 @@ export default async function Dashboard() {
 
       <section className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <CartaoIndicador rotulo="Atletas ativos" valor={String(atletas ?? 0)} />
-        <CartaoIndicador rotulo="Sessões nesta semana" valor={String(sessoesSemana ?? 0)} />
-        <CartaoIndicador rotulo="Presença no mês" valor={presenca} detalhe={registros.length ? `${registros.length} registros` : "Sem presenças registradas"} />
-        <CartaoIndicador rotulo="Atletas em alerta" valor={String(new Set(monitor.alertas.map((a) => a.atletaId)).size)} detalhe="Veja a lista abaixo" destaque />
+        {!off("calendario") && <CartaoIndicador rotulo="Sessões nesta semana" valor={String(sessoesSemana ?? 0)} />}
+        {!off("calendario") && <CartaoIndicador rotulo="Presença no mês" valor={presenca} detalhe={registros.length ? `${registros.length} registros` : "Sem presenças registradas"} />}
+        {!off("monitorizacao") && <CartaoIndicador rotulo="Atletas em alerta" valor={String(new Set(monitor.alertas.map((a) => a.atletaId)).size)} detalhe="Veja a lista abaixo" destaque />}
       </section>
 
       <section className="grid gap-4 lg:grid-cols-3">
-        <div className="rounded-lg border border-linha bg-white p-5 lg:col-span-2">
+        {!off("monitorizacao") && (
+<div className="rounded-lg border border-linha bg-white p-5 lg:col-span-2">
           <h2 className="mb-3 font-titulo text-xl font-semibold">Carga da semana (média por atleta)</h2>
           <GraficoCarga dados={monitor.diario} />
         </div>
-        <div className="rounded-lg border border-linha bg-white p-5">
+)}
+        {!off("calendario") && (
+<div className="rounded-lg border border-linha bg-white p-5">
           <h2 className="mb-3 font-titulo text-xl font-semibold">Próximas sessões</h2>
           {(proximas ?? []).length === 0 ? <p className="text-sm text-suave">Nenhuma sessão agendada. <Link href="/calendario" className="text-quadra-600 underline">Abrir calendário</Link></p> : (
             <ul className="space-y-3">
@@ -77,9 +83,11 @@ export default async function Dashboard() {
             </ul>
           )}
         </div>
+)}
       </section>
 
-      <section className="rounded-lg border border-linha bg-white p-5">
+      {!off("monitorizacao") && (
+<section className="rounded-lg border border-linha bg-white p-5">
         <h2 className="mb-3 font-titulo text-xl font-semibold">Atletas que pedem atenção</h2>
         {monitor.alertas.length === 0 ? <p className="text-sm text-suave">Nenhum alerta no momento.</p> : (
           <ul className="divide-y divide-linha">
@@ -92,6 +100,7 @@ export default async function Dashboard() {
           </ul>
         )}
       </section>
+)}
     </div>
   );
 }

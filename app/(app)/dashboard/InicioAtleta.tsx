@@ -7,6 +7,7 @@ import { dataBr } from "@/lib/fases";
 import { ROTULO_TIPO } from "@/components/calendario/tipos";
 import { DicaInstalar } from "@/components/ui/DicaInstalar";
 import type { Perfil } from "@/lib/sessao";
+import { carregarDesativados } from "@/lib/configuracoes";
 
 const ATALHOS: { href: string; titulo: string; desc: string; icone: any; modulo: Modulo }[] = [
   { href: "/calendario", titulo: "Calendário", desc: "Treinos e jogos", icone: CalendarDays, modulo: "calendario" },
@@ -21,6 +22,8 @@ const quando = (iso: string) =>
 
 // Página inicial do atleta: boas-vindas, situação de hoje, atalhos, como o app funciona e instalação
 export async function InicioAtleta({ supabase, perfil }: { supabase: any; perfil: Perfil }) {
+  const desativados = await carregarDesativados();
+  const off = (m: string) => desativados.includes(m);
   const hoje = hojeChave();
   const primeiroNome = perfil.nome.split(" ")[0];
 
@@ -36,7 +39,7 @@ export async function InicioAtleta({ supabase, perfil }: { supabase: any; perfil
   const atual = ativas.find((f) => convocadoEm.has(f.id));
   const proximaFase = ((fases ?? []) as any[]).find((f) => f.inicio > hoje && convocadoEm.has(f.id));
   const respondeu = ((respostaHoje ?? []) as any[]).length > 0;
-  const atalhos = ATALHOS.filter((a) => podeVer(perfil.papel, a.modulo));
+  const atalhos = ATALHOS.filter((a) => podeVer(perfil.papel, a.modulo) && !off(a.modulo));
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
@@ -45,7 +48,8 @@ export async function InicioAtleta({ supabase, perfil }: { supabase: any; perfil
         <p className="text-suave">Bem-vindo ao Handebol Hub, o app criado pela comissão técnica para acompanhar as fases de treinamento e o bem-estar dos atletas. Suas respostas ajudam a comissão a ajustar o trabalho e a cuidar de você.</p>
       </header>
 
-      <section aria-label="Situação de hoje" className="rounded-lg border border-linha bg-white p-5">
+      {!off("bemestar") && (
+<section aria-label="Situação de hoje" className="rounded-lg border border-linha bg-white p-5">
         <h2 className="mb-2 font-titulo text-xl font-semibold">Hoje</h2>
         {atual ? (
           <div className="space-y-3">
@@ -63,6 +67,7 @@ export async function InicioAtleta({ supabase, perfil }: { supabase: any; perfil
           </p>
         )}
       </section>
+)}
 
       <section aria-label="Atalhos">
         <h2 className="mb-2 font-titulo text-xl font-semibold">Para onde você quer ir?</h2>
@@ -81,7 +86,8 @@ export async function InicioAtleta({ supabase, perfil }: { supabase: any; perfil
         </ul>
       </section>
 
-      <section aria-label="Próximas sessões" className="rounded-lg border border-linha bg-white p-5">
+      {!off("calendario") && (
+<section aria-label="Próximas sessões" className="rounded-lg border border-linha bg-white p-5">
         <h2 className="mb-3 font-titulo text-xl font-semibold">Próximas sessões</h2>
         {((proximas ?? []) as any[]).length === 0 ? (
           <p className="text-sm text-suave">Nenhuma sessão agendada por enquanto.</p>
@@ -96,30 +102,41 @@ export async function InicioAtleta({ supabase, perfil }: { supabase: any; perfil
           </ul>
         )}
       </section>
+)}
 
       <section aria-label="Como o app funciona" className="rounded-lg border border-linha bg-white p-5">
         <h2 className="mb-3 font-titulo text-xl font-semibold">Como o app funciona</h2>
         <dl className="space-y-3 text-sm">
-          <div>
+          {!off("calendario") && (
+<div>
             <dt className="font-medium">Calendário e RPE</dt>
             <dd className="text-suave">Veja os treinos e jogos marcados pela comissão e, dentro de cada sessão, os exercícios que foram selecionados para ela. Se você estiver convocado para a fase, ao sair do treino abra a sessão e registre o RPE: uma nota de 0 a 10 para o esforço da sessão inteira (0 é repouso e 10 é esforço máximo).</dd>
           </div>
-          <div>
+)}
+          {!off("bemestar") && (
+<div>
             <dt className="font-medium">Meu bem-estar</dt>
             <dd className="text-suave">Nas fases de treinamento, responda uma vez por dia sobre sono, cansaço, dores e humor, com notas de 1 a 5 (5 é o melhor cenário). Leva menos de um minuto e ajuda a comissão a cuidar de você.</dd>
           </div>
-          <div>
+)}
+          {!off("musculacao") && (
+<div>
             <dt className="font-medium">Musculação</dt>
             <dd className="text-suave">Registre os dias em que fez o treino de musculação da preparação física e conte como foi.</dd>
           </div>
-          <div>
+)}
+          {!off("shootout") && (
+<div>
             <dt className="font-medium">Shoot-out</dt>
             <dd className="text-suave">Veja as suas batidas de shoot-out e o ranking da fase de treinamento. A comissão técnica faz os registros.</dd>
           </div>
-          <div>
+)}
+          {!off("prancheta") && (
+<div>
             <dt className="font-medium">Prancheta</dt>
             <dd className="text-suave">Consulte as jogadas e os esquemas montados pela comissão.</dd>
           </div>
+)}
         </dl>
         <p className="mt-4 border-t border-linha pt-3 text-sm text-suave">Suas respostas de bem-estar, RPE e dores são vistas apenas pela comissão técnica, pela gestão e pela direção. Os colegas não têm acesso.</p>
       </section>

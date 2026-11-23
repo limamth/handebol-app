@@ -3,12 +3,12 @@ import { sair } from "@/app/(auth)/login/actions";
 import { ROTULO_PAPEL } from "@/lib/papeis";
 import { MenuMovel } from "./MenuMovel";
 
-export function Topbar({ nome, papel }: { nome: string; papel: Papel }) {
+export function Topbar({ nome, papel, desativados = [] }: { nome: string; papel: Papel; desativados?: string[] }) {
   const iniciais = nome.split(" ").map((p) => p[0]).slice(0, 2).join("").toUpperCase();
   return (
     <header className="flex h-16 items-center justify-between border-b border-linha bg-white px-4 md:px-6 print:hidden">
       <div className="flex items-center gap-3 md:hidden">
-        <MenuMovel papel={papel} />
+        <MenuMovel papel={papel} desativados={desativados} />
         <span className="font-titulo text-xl font-bold">Handebol Hub</span>
       </div>
       <div className="hidden md:block" />

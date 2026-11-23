@@ -7,7 +7,7 @@ import { ListaNavegacao } from "./ListaNavegacao";
 import type { Papel } from "@/types";
 
 // Menu em gaveta para telas pequenas (no computador o menu lateral continua fixo)
-export function MenuMovel({ papel }: { papel: Papel }) {
+export function MenuMovel({ papel, desativados = [] }: { papel: Papel; desativados?: string[] }) {
   const [aberto, setAberto] = useState(false);
   const pathname = usePathname();
   const botaoAbrir = useRef<HTMLButtonElement>(null);
@@ -46,7 +46,7 @@ export function MenuMovel({ papel }: { papel: Papel }) {
                 <X size={22} aria-hidden />
               </button>
             </div>
-            <ListaNavegacao papel={papel} />
+            <ListaNavegacao papel={papel} desativados={desativados} />
           </div>
         </div>
       )}

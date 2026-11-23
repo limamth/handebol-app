@@ -1,4 +1,4 @@
-import { Home, Users, CalendarDays, Dumbbell, PenTool, Activity, ClipboardList, BarChart3, UserCog, Weight, HeartPulse, Stethoscope, Target, Database, type LucideIcon } from "lucide-react";
+import { Home, Users, CalendarDays, Dumbbell, PenTool, Activity, ClipboardList, BarChart3, UserCog, Weight, HeartPulse, Stethoscope, Target, Database, Settings, type LucideIcon } from "lucide-react";
 import type { Modulo } from "./permissions";
 
 export interface ItemNav { rotulo: string; href: string; icone: LucideIcon; modulo?: Modulo; }
@@ -20,6 +20,7 @@ export const NAVEGACAO: GrupoNav[] = [
     { rotulo: "Estatísticas", href: "/estatisticas", icone: BarChart3, modulo: "estatisticas" },
     { rotulo: "Utilizadores", href: "/utilizadores", icone: UserCog, modulo: "utilizadores" },
     { rotulo: "Backup", href: "/backup", icone: Database, modulo: "backup" },
+    { rotulo: "Configurações", href: "/configuracoes", icone: Settings, modulo: "configuracoes" },
   ]},
   { titulo: "Biblioteca", itens: [
     { rotulo: "Exercícios", href: "/biblioteca", icone: Dumbbell, modulo: "biblioteca" },
