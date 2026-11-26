@@ -31,7 +31,7 @@ export function DicaInstalar({ aberto = false }: { aberto?: boolean }) {
             <li>Confirme.</li>
           </ol>
         </div>
-        <p className="text-suave">Depois é só abrir pelo ícone “Handebol Hub” na tela inicial: o app abre em tela cheia, como um aplicativo, sem precisar de loja.</p>
+        <p className="text-suave">Depois é só abrir pelo ícone “BH Hub” na tela inicial: o app abre em tela cheia, como um aplicativo, sem precisar de loja.</p>
 
         <div className="border-t border-linha pt-3 space-y-2">
           <p className="font-medium">Como ligar as notificações no celular</p>
@@ -50,7 +50,7 @@ export function DicaInstalar({ aberto = false }: { aberto?: boolean }) {
             </li>
           </ol>
           <p className="text-xs text-suave">
-            Se tiver negado sem querer: no <strong>iPhone</strong> acesse <em>Ajustes → Notificações → Handebol Hub</em> e ative; no <strong>Android</strong> abra as informações do app/site no Chrome e mude <em>Notificações</em> para <em>Permitir</em>.
+            Se tiver negado sem querer: no <strong>iPhone</strong> acesse <em>Ajustes → Notificações → BH Hub</em> e ative; no <strong>Android</strong> abra as informações do app/site no Chrome e mude <em>Notificações</em> para <em>Permitir</em>.
           </p>
         </div>
       </div>

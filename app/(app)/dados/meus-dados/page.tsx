@@ -7,7 +7,7 @@ import { Aviso } from "@/components/ui/Aviso";
 import { Contact2 } from "lucide-react";
 
 export const metadata = {
-  title: "Meus Dados Cadastrais | Handebol Hub",
+  title: "Meus Dados Cadastrais | BH Hub",
 };
 
 export default async function PaginaMeusDados({

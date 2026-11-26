@@ -7,13 +7,13 @@ const corpo = Barlow({ subsets: ["latin"], weight: ["400", "500", "600"], variab
 const titulo = Barlow_Condensed({ subsets: ["latin"], weight: ["600", "700"], variable: "--font-titulo" });
 
 export const metadata: Metadata = {
-  title: "Handebol Hub",
-  description: "Gestão de equipas, treinos e desempenho no handebol",
+  title: "BH Hub",
+  description: "Gestão de equipas, treinos e desempenho no handebol de praia",
   icons: { icon: "/icons/icon-192.png", apple: "/icons/apple-touch-icon.png" },
-  appleWebApp: { capable: true, title: "Handebol Hub", statusBarStyle: "default" },
+  appleWebApp: { capable: true, title: "BH Hub", statusBarStyle: "default" },
 };
 
-export const viewport: Viewport = { width: "device-width", initialScale: 1, themeColor: "#14284B" };
+export const viewport: Viewport = { width: "device-width", initialScale: 1, themeColor: "#0F355E" };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

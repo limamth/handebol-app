@@ -6,7 +6,7 @@ import { EditorApresentacao } from "@/components/apresentacoes/EditorApresentaca
 import type { Apresentacao, ApresentacaoSlide } from "@/lib/apresentacoes";
 
 export const metadata = {
-  title: "Editor de Apresentação | Handebol Hub",
+  title: "Editor de Apresentação | BH Hub",
 };
 
 export default async function PaginaDetalheApresentacao({ params }: { params: { id: string } }) {

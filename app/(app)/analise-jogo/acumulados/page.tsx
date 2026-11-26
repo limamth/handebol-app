@@ -17,7 +17,7 @@ import {
 import { ArrowLeft, Trophy, Users } from "lucide-react";
 
 export const metadata = {
-  title: "Estatísticas Acumuladas | Handebol Hub",
+  title: "Estatísticas Acumuladas | BH Hub",
 };
 
 export default async function PaginaAcumulados({

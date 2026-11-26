@@ -30,7 +30,7 @@ export function PainelLembreteBemEstar({
     if (!faseAtiva || pendentes.length === 0) return;
 
     const nomes = pendentes.map((p, i) => `${i + 1}. ${p.nome}`).join("\n");
-    const texto = `*Lembrete de Bem-Estar - Handebol Hub*\n` +
+    const texto = `*Lembrete de Bem-Estar - BH Hub*\n` +
       `Fase: *${faseAtiva.nome}*\n\n` +
       `Olá atletas convocados, favor responder o questionário de bem-estar de hoje no app:\n\n` +
       `${nomes}\n\n` +

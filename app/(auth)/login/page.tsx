@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { criarClienteServidor } from "@/lib/supabase/server";
+import { LogoBHHub } from "@/components/ui/LogoBHHub";
 import { entrar, criarClube, criarContaComCodigo } from "./actions";
 
 const TITULOS: Record<string, { titulo: string; texto: string }> = {
@@ -18,6 +19,9 @@ export default async function Login({ searchParams }: { searchParams: { modo?: s
   return (
     <main className="flex min-h-screen items-center justify-center bg-quadra-900 p-6">
       <div className="w-full max-w-sm rounded-lg bg-white p-8">
+        <div className="mb-6">
+          <LogoBHHub variante="clara" subtitulo tamanho="lg" />
+        </div>
         <h1 className="font-titulo text-3xl font-bold">{TITULOS[modo].titulo}</h1>
         <p className="mt-1 text-sm text-suave">{TITULOS[modo].texto}</p>
 

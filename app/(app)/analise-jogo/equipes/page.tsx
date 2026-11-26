@@ -19,7 +19,7 @@ import {
 import { ArrowLeft, Flag, ListPlus, Plus, RefreshCw, Shield, Trash2, UserPlus, Users } from "lucide-react";
 
 export const metadata = {
-  title: "Equipes de Análise | Handebol Hub",
+  title: "Equipes de Análise | BH Hub",
 };
 
 const campo = "mt-1 w-full rounded-md border border-linha bg-white px-3 py-2 text-sm text-tinta";

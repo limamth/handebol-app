@@ -7,7 +7,7 @@ import { FormularioDadosAtleta } from "@/components/dados/FormularioDadosAtleta"
 import { Aviso } from "@/components/ui/Aviso";
 
 export const metadata = {
-  title: "Ficha Cadastral | Handebol Hub",
+  title: "Ficha Cadastral | BH Hub",
 };
 
 export default async function PaginaFichaCadastralAtleta({

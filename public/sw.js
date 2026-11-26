@@ -1,9 +1,9 @@
-// Service Worker do Handebol Hub (PWA)
+// Service Worker do BH Hub (PWA)
 // Proteção de privacidade: Não armazena em cache dados sensíveis de saúde dos atletas nem rotas de API.
 // Faz cache de arquivos estáticos da interface e exibe tela de fallback quando offline.
 
-const CACHE_ESTATICO = "handebol-hub-static-v2";
-const CACHE_OFFLINE = "handebol-hub-offline-v2";
+const CACHE_ESTATICO = "bh-hub-static-v1";
+const CACHE_OFFLINE = "bh-hub-offline-v1";
 const OFFLINE_URL = "/offline.html";
 
 const ARQUIVOS_BASE = [
@@ -76,7 +76,7 @@ self.addEventListener("fetch", (evento) => {
 // Evento PUSH: Exibe notificação recebida em segundo plano
 self.addEventListener("push", (evento) => {
   let dados = {
-    title: "Handebol Hub - Lembrete",
+    title: "BH Hub - Lembrete",
     body: "Você tem um lembrete pendente no aplicativo.",
     url: "/meu-bem-estar",
   };

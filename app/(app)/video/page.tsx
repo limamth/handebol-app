@@ -8,7 +8,7 @@ import { criarProjetoVideo, excluirProjetoVideo } from "./actions";
 import { Film, Play, Plus, Trash2, Youtube, HardDrive } from "lucide-react";
 
 export const metadata = {
-  title: "Vídeo & Tagging Esportivo | Handebol Hub",
+  title: "Vídeo & Tagging Esportivo | BH Hub",
 };
 
 const campo = "mt-1 w-full rounded-md border border-linha bg-white px-3 py-2 text-sm";

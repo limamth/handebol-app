@@ -7,7 +7,7 @@ import type { PlaylistVideo, ProjetoVideo, TagVideo } from "@/lib/video-tagging"
 import { obterNomeEquipeA, obterNomeEquipeB, type PartidaAnalise } from "@/lib/analise-jogo";
 
 export const metadata = {
-  title: "Estúdio de Vídeo & Tagging | Handebol Hub",
+  title: "Estúdio de Vídeo & Tagging | BH Hub",
 };
 
 export default async function PaginaEstudioVideo({ params }: { params: { id: string } }) {

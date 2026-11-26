@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" fill="none">
+  <rect width="512" height="512" rx="112" fill="#0F355E"/>
+  <g transform="translate(56, 108) scale(2.85)">
+    <!-- B -->
+    <path d="M 10 14 H 42 C 55 14 62 21 62 31 C 62 39 56 45 48 47 C 58 49 65 56 65 67 C 65 80 55 88 40 88 H 10 V 14 Z" fill="#FFFFFF"/>
+    <path d="M 24 25 H 39 C 45 25 48 28 48 33 C 48 38 45 41 39 41 H 24 V 25 Z" fill="#0F355E"/>
+    <path d="M 24 54 H 40 C 47 54 51 58 51 65 C 51 72 47 76 40 76 H 24 V 54 Z" fill="#0F355E"/>
+
+    <!-- H -->
+    <rect x="74" y="14" width="14" height="74" rx="2" fill="#FFFFFF"/>
+    <rect x="110" y="14" width="14" height="74" rx="2" fill="#FFFFFF"/>
+    <rect x="84" y="44" width="30" height="13" fill="#FFFFFF"/>
+
+    <!-- Onda conectando B e H -->
+    <path d="M 4 66 C 28 76, 48 42, 74 39 C 98 36, 118 46, 134 62" stroke="#0F355E" stroke-width="11" stroke-linecap="round"/>
+    <path d="M 6 66 C 30 76, 49 43, 74 40 C 97 37, 117 47, 132 61" stroke="#E09F3E" stroke-width="6" stroke-linecap="round"/>
+
+    <!-- Sol / Bola minimalista -->
+    <circle cx="99" cy="22" r="8" fill="#E09F3E"/>
+  </g>
+</svg>

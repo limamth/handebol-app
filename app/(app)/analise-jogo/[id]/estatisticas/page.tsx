@@ -7,7 +7,7 @@ import { PainelEstatisticasPartida } from "@/components/analise-jogo/PainelEstat
 import type { AcaoPartida, PartidaAnalise } from "@/lib/analise-jogo";
 
 export const metadata = {
-  title: "Estatísticas da Partida | Handebol Hub",
+  title: "Estatísticas da Partida | BH Hub",
 };
 
 export default async function PaginaEstatisticasPartida({

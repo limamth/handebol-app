@@ -9,7 +9,7 @@ import { criarApresentacao, excluirApresentacao } from "./actions";
 import { Presentation, Plus, Play, Trash2 } from "lucide-react";
 
 export const metadata = {
-  title: "Apresentações Táticas | Handebol Hub",
+  title: "Apresentações Táticas | BH Hub",
 };
 
 const campo = "mt-1 w-full rounded-md border border-linha bg-white px-3 py-2 text-sm";

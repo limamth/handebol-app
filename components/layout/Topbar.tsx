@@ -1,6 +1,7 @@
 import type { Papel } from "@/types";
 import { sair } from "@/app/(auth)/login/actions";
 import { ROTULO_PAPEL } from "@/lib/papeis";
+import { LogoBHHub } from "@/components/ui/LogoBHHub";
 import { MenuMovel } from "./MenuMovel";
 
 export function Topbar({ nome, papel, desativados = [] }: { nome: string; papel: Papel; desativados?: string[] }) {
@@ -9,7 +10,7 @@ export function Topbar({ nome, papel, desativados = [] }: { nome: string; papel:
     <header className="flex h-16 items-center justify-between border-b border-linha bg-white px-4 md:px-6 print:hidden">
       <div className="flex items-center gap-3 md:hidden">
         <MenuMovel papel={papel} desativados={desativados} />
-        <span className="font-titulo text-xl font-bold">Handebol Hub</span>
+        <LogoBHHub variante="clara" tamanho="sm" />
       </div>
       <div className="hidden md:block" />
       <div className="flex items-center gap-3">

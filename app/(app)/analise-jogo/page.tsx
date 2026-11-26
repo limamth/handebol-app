@@ -16,7 +16,7 @@ import { criarPartidaAnalise, excluirPartidaAnalise } from "./actions";
 import { Radio, BarChart3, Play, Trophy, Plus, Trash2, Users } from "lucide-react";
 
 export const metadata = {
-  title: "Análise de Jogo ao Vivo | Handebol Hub",
+  title: "Análise de Jogo ao Vivo | BH Hub",
 };
 
 const campo = "mt-1 w-full rounded-md border border-linha bg-white px-3 py-2 text-sm";

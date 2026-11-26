@@ -52,7 +52,7 @@ export async function InicioAtleta({ supabase, perfil }: { supabase: any; perfil
     <div className="mx-auto max-w-3xl space-y-6">
       <header>
         <h1 className="font-titulo text-3xl font-bold">Olá, {primeiroNome}!</h1>
-        <p className="text-suave">Bem-vindo ao Handebol Hub, o app criado pela comissão técnica para acompanhar as fases de treinamento e o bem-estar dos atletas. Suas respostas ajudam a comissão a ajustar o trabalho e a cuidar de você.</p>
+        <p className="text-suave">Bem-vindo ao BH Hub, o app criado pela comissão técnica para acompanhar as fases de treinamento e o bem-estar dos atletas. Suas respostas ajudam a comissão a ajustar o trabalho e a cuidar de você.</p>
       </header>
 
       {!off("bemestar") && (

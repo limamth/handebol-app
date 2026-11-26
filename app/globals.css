@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 body { @apply bg-fundo text-tinta font-corpo antialiased; }
-:focus-visible { outline: 2px solid #F26A1B; outline-offset: 2px; }
+:focus-visible { outline: 2px solid #E09F3E; outline-offset: 2px; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 
 @media (max-width: 767px) {

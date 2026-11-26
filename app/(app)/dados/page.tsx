@@ -10,7 +10,7 @@ import { Contact2, Sparkles, UploadCloud } from "lucide-react";
 import { importarPlanilhaCadastro } from "./actions";
 
 export const metadata = {
-  title: "Banco de Dados dos Atletas | Handebol Hub",
+  title: "Banco de Dados dos Atletas | BH Hub",
 };
 
 export default async function PaginaDados({

@@ -6,7 +6,7 @@ import { PainelAoVivo, type AtletaSimples } from "@/components/analise-jogo/Pain
 import type { AcaoPartida, PartidaAnalise } from "@/lib/analise-jogo";
 
 export const metadata = {
-  title: "Registro ao Vivo | Handebol Hub",
+  title: "Registro ao Vivo | BH Hub",
 };
 
 export default async function PaginaRegistroAoVivo({ params }: { params: { id: string } }) {
