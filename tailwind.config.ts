@@ -5,8 +5,8 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        quadra: { 950: "#0F1E3A", 900: "#14284B", 800: "#1C3866", 600: "#2F5496" },
-        bola: { 500: "#F26A1B", 100: "#FDE6D6" },
+        quadra: { 950: "#09223E", 900: "#0F355E", 800: "#17477A", 600: "#2563A8" },
+        bola: { 500: "#C47F1B", 100: "#FDF3E3" },
         linha: "#DDE2EA",
         fundo: "#F2F4F7",
         tinta: "#18202E",
