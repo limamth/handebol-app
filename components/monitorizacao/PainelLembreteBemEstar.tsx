@@ -34,7 +34,7 @@ export function PainelLembreteBemEstar({
       `Fase: *${faseAtiva.nome}*\n\n` +
       `Olá atletas convocados, favor responder o questionário de bem-estar de hoje no app:\n\n` +
       `${nomes}\n\n` +
-      `👉 Acesse: https://handebolapp.com.br/meu-bem-estar`;
+      `👉 Acesse: https://bhhub.vercel./meu-bem-estar`;
 
     navigator.clipboard.writeText(texto).then(() => {
       setCopiado(true);
