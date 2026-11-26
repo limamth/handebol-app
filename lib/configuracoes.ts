@@ -15,6 +15,11 @@ export const MODULOS_CONFIGURAVEIS: { chave: Modulo; rotulo: string; descricao: 
   { chave: "estatisticas", rotulo: "Estatísticas", descricao: "Estatísticas de treino e presença, relatório para imprimir e exportação em CSV." },
   { chave: "musculacao", rotulo: "Musculação", descricao: "Registro dos treinos de musculação pelos atletas e o acompanhamento do grupo." },
   { chave: "shootout", rotulo: "Shoot-out", descricao: "Registro das batidas, rankings e comparação entre fases." },
+  { chave: "scout", rotulo: "Scout de Adversários", descricao: "Inteligência tática: registro e análise de arremessos de jogo e shoot-out dos adversários." },
+  { chave: "analise_jogo", rotulo: "Análise de Jogo ao Vivo", descricao: "Registro lance a lance ao vivo durante a partida (arremessos, turnovers, ações defensivas, zonas e tempos) com estatísticas instantâneas e acumuladas." },
+  { chave: "video", rotulo: "Vídeo & Tagging Esportivo", descricao: "Análise de vídeo quadro a quadro com botões de marcação (tagging), linha do tempo e ajuste fino de recortes." },
+  { chave: "apresentacoes", rotulo: "Apresentações", descricao: "Montagem de slides táticos, preleções e reuniões com integração direta de cortes de vídeo e imagens." },
+  { chave: "dados", rotulo: "Dados dos Atletas", descricao: "Banco de dados central: tamanhos de uniforme, documentos, passaportes, viagens, contatos e campos dinâmicos personalizáveis." },
 ];
 
 export const rotuloDoModulo = (chave: string) => MODULOS_CONFIGURAVEIS.find((m) => m.chave === chave)?.rotulo ?? chave;

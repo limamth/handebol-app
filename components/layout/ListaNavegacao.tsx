@@ -12,12 +12,12 @@ export function ListaNavegacao({ papel, desativados = [] }: { papel: Papel; desa
   const veDesativadas = podeVer(papel, "configuracoes");
 
   return (
-    <nav className="flex-1 space-y-6 overflow-y-auto px-3 pb-6" aria-label="Navegação principal">
+    <nav className="flex-1 space-y-4 overflow-y-auto px-3 pb-6" aria-label="Navegação principal">
       {NAVEGACAO.map((grupo, i) => {
         const itens = grupo.itens.filter((it) => !it.modulo || (podeVer(papel, it.modulo) && (veDesativadas || !desativados.includes(it.modulo))));
         if (itens.length === 0) return null;
         return (
-          <div key={i}>
+          <div key={i} className={i > 0 ? "border-t border-white/10 pt-4" : ""}>
             {grupo.titulo && <p className="px-3 pb-2 text-xs font-medium text-white/50">{grupo.titulo}</p>}
             <ul className="space-y-1">
               {itens.map(({ rotulo, href, icone: Icone, modulo }) => {

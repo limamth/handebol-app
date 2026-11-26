@@ -6,6 +6,7 @@ import { Aviso } from "@/components/ui/Aviso";
 import { BotaoImprimir } from "@/components/ui/BotaoImprimir";
 import { POSICOES } from "@/lib/modalidade";
 import { atualizarAtleta, excluirAtleta, gerarConvite, atualizarBemEstar, excluirBemEstar, atualizarResultadoTeste, excluirResultadoTeste } from "../actions";
+import { vincularAtletaEquipa, desvincularAtletaEquipa } from "@/app/(app)/equipas/actions";
 import { mediaRespostas, fmt1, PERGUNTAS_BEM_ESTAR, NOME_QUESTIONARIO } from "@/lib/monitorizacao";
 import { dataCurta, hojeChave } from "@/lib/periodo";
 
@@ -26,9 +27,14 @@ export default async function FichaAtleta({ params, searchParams }: { params: { 
   const perguntas = (questionarios?.[0]?.perguntas ?? PERGUNTAS_BEM_ESTAR) as typeof PERGUNTAS_BEM_ESTAR;
 
   const comissaoConvida = ["gestor", "comissao_tecnica"].includes(perfil.papel);
+  const podeGerirEquipas = podeEditar(perfil.papel, "equipas");
   const { data: convite } = comissaoConvida && !atleta.auth_id
     ? await supabase.from("convites").select("codigo").eq("usuario_id", params.id).maybeSingle()
     : { data: null };
+
+  const { data: todasEquipas } = podeGerirEquipas
+    ? await supabase.from("equipas").select("id, nome").eq("clube_id", perfil.clube_id).order("nome")
+    : { data: [] };
 
   const vazio = { data: [] as any[] };
   const [{ data: cargas }, { data: bemEstar }, { data: marcas }] = podeVer(perfil.papel, "monitorizacao")
@@ -54,6 +60,14 @@ export default async function FichaAtleta({ params, searchParams }: { params: { 
         <div>
           <h1 className="font-titulo text-3xl font-bold">{atleta.nome}</h1>
           <p className="text-suave">{atleta.posicao ?? "Posição não informada"}{idade ? ` · ${idade} anos` : ""}</p>
+          <div className="mt-2">
+            <Link
+              href={`/dados/${atleta.id}`}
+              className="inline-flex items-center gap-1.5 rounded-md border border-linha bg-fundo px-2.5 py-1 text-xs font-semibold text-tinta hover:bg-cinza-100"
+            >
+              Ficha Completa de Dados & Uniformes →
+            </Link>
+          </div>
         </div>
         <div className="ml-auto"><BotaoImprimir /></div>
       </header>
@@ -118,14 +132,79 @@ export default async function FichaAtleta({ params, searchParams }: { params: { 
 
       <section className="rounded-lg border border-linha bg-white p-5">
         <h2 className="mb-3 font-titulo text-xl font-semibold">Equipas</h2>
-        <ul className="divide-y divide-linha">
-          {vinculos.map((v) => (
-            <li key={v.equipas.id} className="flex items-center justify-between py-3">
-              <Link href={`/equipas/${v.equipas.id}`} className="font-medium text-quadra-600 underline">{v.equipas.nome}</Link>
-              <span className="text-sm text-suave">Camisa {v.numero_camisa ?? "-"}</span>
-            </li>
-          ))}
-        </ul>
+
+        {vinculos.length === 0 ? (
+          <div className="rounded-md border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
+            <p className="font-semibold">Atleta sem equipa</p>
+            <p className="text-xs text-amber-700 mt-0.5">
+              Este atleta ainda não está vinculado a nenhuma equipa. Vincule-o abaixo para que ele apareça nas listas de presença, sessões e monitorização.
+            </p>
+          </div>
+        ) : (
+          <ul className="divide-y divide-linha">
+            {vinculos.map((v) => (
+              <li key={v.equipas.id} className="flex items-center justify-between py-3">
+                <div>
+                  <Link href={`/equipas/${v.equipas.id}`} className="font-medium text-quadra-600 underline">
+                    {v.equipas.nome}
+                  </Link>
+                  <span className="text-sm text-suave ml-2">Camisa {v.numero_camisa ?? "-"}</span>
+                </div>
+                {podeGerirEquipas && (
+                  <form action={desvincularAtletaEquipa.bind(null, atleta.id, v.equipas.id)}>
+                    <button
+                      type="submit"
+                      className="text-xs text-red-600 hover:underline"
+                    >
+                      Remover da equipa
+                    </button>
+                  </form>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
+
+        {podeGerirEquipas && (() => {
+          const idsVinculados = new Set(vinculos.map((v) => v.equipas?.id));
+          const disponiveis = (todasEquipas ?? []).filter((e) => !idsVinculados.has(e.id));
+          if (disponiveis.length === 0) return null;
+
+          return (
+            <form action={vincularAtletaEquipa.bind(null, atleta.id)} className="mt-4 flex flex-wrap items-end gap-3 rounded-lg border border-linha bg-fundo p-3">
+              <label className="block text-xs font-semibold text-tinta">
+                Vincular a uma equipa
+                <select name="equipa_id" required className="mt-1 block rounded-md border border-linha bg-white px-3 py-2 text-sm text-tinta focus:border-bola-500 focus:outline-none">
+                  <option value="">Selecione a equipa...</option>
+                  {disponiveis.map((e) => (
+                    <option key={e.id} value={e.id}>
+                      {e.nome}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label className="block text-xs font-semibold text-tinta">
+                Nº da camisa (opcional)
+                <input
+                  name="camisa"
+                  type="number"
+                  min={1}
+                  max={99}
+                  placeholder="Ex: 10"
+                  className="mt-1 block w-24 rounded-md border border-linha bg-white px-3 py-2 text-sm text-center text-tinta focus:border-bola-500 focus:outline-none"
+                />
+              </label>
+
+              <button
+                type="submit"
+                className="rounded-md bg-bola-500 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:opacity-90 transition"
+              >
+                Vincular à Equipa
+              </button>
+            </form>
+          );
+        })()}
       </section>
 
       <section className="rounded-lg border border-linha bg-white p-5">

@@ -68,3 +68,40 @@ export async function salvarBemEstar(equipaId: string, questionarioId: string, d
   const aviso = `${completos.length} atleta(s) salvo(s).` + (incompletos ? ` ${incompletos} ficou(aram) de fora por ter perguntas sem resposta.` : "");
   redirect(`${base}&aviso=` + encodeURIComponent(aviso));
 }
+
+export async function dispararLembreteManual(formData: FormData) {
+  const { supabase, perfil } = await obterPerfil();
+  if (!podeEditar(perfil.papel, "monitorizacao")) {
+    redirect("/monitorizacao?erro=" + encodeURIComponent("Permissão insuficiente para disparar notificações."));
+  }
+
+  const { enviarLembreteBemEstar } = await import("@/lib/notificacoes");
+  const res = await enviarLembreteBemEstar(supabase, perfil.clube_id);
+
+  revalidatePath("/monitorizacao");
+  redirect("/monitorizacao?aviso=" + encodeURIComponent(res.mensagem));
+}
+
+export async function atualizarHorarioLembrete(formData: FormData) {
+  const { supabase, perfil } = await obterPerfil();
+  if (!podeEditar(perfil.papel, "monitorizacao")) {
+    redirect("/monitorizacao?erro=" + encodeURIComponent("Permissão insuficiente para alterar configurações de notificação."));
+  }
+
+  const horario = String(formData.get("horario") || "").trim();
+  const ativo = formData.get("ativo") === "1" || formData.get("ativo") === "on";
+
+  if (!/^\d{2}:\d{2}$/.test(horario)) {
+    redirect("/monitorizacao?erro=" + encodeURIComponent("Horário inválido. Use o formato HH:MM (ex.: 09:00)."));
+  }
+
+  const { salvarConfiguracaoLembretes } = await import("@/lib/notificacoes");
+  await salvarConfiguracaoLembretes(supabase, perfil.clube_id, {
+    horarioLembrete: horario,
+    ativo,
+  });
+
+  revalidatePath("/monitorizacao");
+  revalidatePath("/configuracoes");
+  redirect("/monitorizacao?aviso=" + encodeURIComponent(`Horário fixo do lembrete diário atualizado para ${horario}.`));
+}

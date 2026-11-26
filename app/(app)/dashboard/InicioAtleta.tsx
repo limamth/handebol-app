@@ -1,20 +1,23 @@
 import Link from "next/link";
-import { CalendarDays, HeartPulse, PenTool, Target, Weight } from "lucide-react";
+import { CalendarDays, Contact2, Dumbbell, HeartPulse, Presentation, Radar, Target, Weight } from "lucide-react";
 import { podeVer, type Modulo } from "@/lib/permissions";
 import { FUSO } from "@/lib/datas";
 import { hojeChave } from "@/lib/periodo";
 import { dataBr } from "@/lib/fases";
 import { ROTULO_TIPO } from "@/components/calendario/tipos";
 import { DicaInstalar } from "@/components/ui/DicaInstalar";
-import type { Perfil } from "@/lib/sessao";
+import { podeVerScout, type Perfil } from "@/lib/sessao";
 import { carregarDesativados } from "@/lib/configuracoes";
 
 const ATALHOS: { href: string; titulo: string; desc: string; icone: any; modulo: Modulo }[] = [
+  { href: "/dados", titulo: "Meus Dados", desc: "Uniformes, documentos e contatos", icone: Contact2, modulo: "dados" },
   { href: "/calendario", titulo: "Calendário", desc: "Treinos e jogos", icone: CalendarDays, modulo: "calendario" },
+  { href: "/biblioteca", titulo: "Exercícios", desc: "Biblioteca de exercícios", icone: Dumbbell, modulo: "biblioteca" },
   { href: "/meu-bem-estar", titulo: "Meu bem-estar", desc: "Como você está hoje", icone: HeartPulse, modulo: "bemestar" },
   { href: "/musculacao", titulo: "Musculação", desc: "Seus treinos e retorno", icone: Weight, modulo: "musculacao" },
   { href: "/shootout", titulo: "Shoot-out", desc: "Batidas e ranking", icone: Target, modulo: "shootout" },
-  { href: "/prancheta", titulo: "Prancheta", desc: "Jogadas e esquemas", icone: PenTool, modulo: "prancheta" },
+  { href: "/apresentacoes", titulo: "Apresentações", desc: "Preleções e slides", icone: Presentation, modulo: "apresentacoes" },
+  { href: "/scout", titulo: "Scout", desc: "Análise de adversários", icone: Radar, modulo: "scout" },
 ];
 
 const quando = (iso: string) =>
@@ -39,7 +42,11 @@ export async function InicioAtleta({ supabase, perfil }: { supabase: any; perfil
   const atual = ativas.find((f) => convocadoEm.has(f.id));
   const proximaFase = ((fases ?? []) as any[]).find((f) => f.inicio > hoje && convocadoEm.has(f.id));
   const respondeu = ((respostaHoje ?? []) as any[]).length > 0;
-  const atalhos = ATALHOS.filter((a) => podeVer(perfil.papel, a.modulo) && !off(a.modulo));
+  const scoutLiberado = podeVerScout(perfil);
+  const atalhos = ATALHOS.filter((a) => {
+    if (a.modulo === "scout" && !scoutLiberado) return false;
+    return podeVer(perfil.papel, a.modulo) && !off(a.modulo);
+  });
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
@@ -135,6 +142,30 @@ export async function InicioAtleta({ supabase, perfil }: { supabase: any; perfil
 <div>
             <dt className="font-medium">Prancheta</dt>
             <dd className="text-suave">Consulte as jogadas e os esquemas montados pela comissão.</dd>
+          </div>
+)}
+          {!off("biblioteca") && (
+<div>
+            <dt className="font-medium">Exercícios</dt>
+            <dd className="text-suave">Explore a biblioteca de exercícios físicos, técnicos e táticos da equipe com descrições e diagramas.</dd>
+          </div>
+)}
+          {!off("dados") && (
+<div>
+            <dt className="font-medium">Meus Dados</dt>
+            <dd className="text-suave">Mantenha seus dados cadastrais atualizados, como tamanhos de uniforme, documentos, passaporte, informações de viagem e contatos de emergência.</dd>
+          </div>
+)}
+          {!off("apresentacoes") && (
+<div>
+            <dt className="font-medium">Apresentações</dt>
+            <dd className="text-suave">Acesse as preleções, reuniões táticas e apresentações liberadas pela comissão técnica.</dd>
+          </div>
+)}
+          {!off("scout") && scoutLiberado && (
+<div>
+            <dt className="font-medium">Scout de Adversários</dt>
+            <dd className="text-suave">Consulte as tendências e estatísticas de arremessos e shoot-out das equipes e atletas adversários liberados pela comissão.</dd>
           </div>
 )}
         </dl>

@@ -6,6 +6,7 @@ import { chaveDia, dataLonga } from "@/lib/datas";
 import { Aviso } from "@/components/ui/Aviso";
 import { carregarDesativados } from "@/lib/configuracoes";
 import { COR_TIPO, ROTULO_PRESENCA, ROTULO_TIPO } from "@/components/calendario/tipos";
+import { FormularioPresencas } from "@/components/calendario/FormularioPresencas";
 import { salvarPresencas, excluirSessao, adicionarExercicio, removerExercicio, salvarMeuRpe } from "../../actions";
 import { ROTULO_RPE } from "@/components/monitorizacao/escalas";
 import { hojeChave, somarDias } from "@/lib/periodo";
@@ -133,25 +134,14 @@ export default async function DetalheSessao({ params, searchParams }: { params: 
       </section>
 
       {perfil.papel !== "atleta" && (
-        <form action={salvarPresencas.bind(null, sessao.id)} className="rounded-lg border border-linha bg-white p-5">
-        <h2 className="mb-3 font-titulo text-xl font-semibold">Presença</h2>
-        {atletas.length === 0 ? (
-          <p className="text-suave">Esta equipa ainda não tem atletas cadastrados.</p>
-        ) : (
-          <ul className="divide-y divide-linha">
-            {atletas.map((a) => (
-              <li key={a.id} className="flex items-center justify-between gap-3 py-2.5">
-                <span className="font-medium">{a.camisa ? `${a.camisa} · ` : ""}{a.nome}</span>
-                <select name={`p_${a.id}`} defaultValue={statusDe[a.id] ?? ""} disabled={!editar} aria-label={`Presença de ${a.nome}`} className="rounded-md border border-linha bg-white px-2 py-1.5 text-sm">
-                  <option value="">Não registrado</option>
-                  {Object.entries(ROTULO_PRESENCA).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
-                </select>
-              </li>
-            ))}
-          </ul>
-        )}
-        {editar && atletas.length > 0 && <button className="mt-4 rounded-md bg-bola-500 px-5 py-2.5 font-semibold text-white hover:opacity-90">Salvar presenças</button>}
-      </form>
+        <FormularioPresencas
+          sessaoId={sessao.id}
+          sessaoTitulo={sessao.titulo}
+          atletas={atletas}
+          statusIniciais={statusDe}
+          editar={editar}
+          rotuloPresenca={ROTULO_PRESENCA}
+        />
       )}
 
       {editar && (

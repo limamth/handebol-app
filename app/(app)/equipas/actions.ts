@@ -129,3 +129,180 @@ export async function moverParaEquipa(equipaId: string, atletaId: string, formDa
 export async function adicionarEmOutraEquipa(equipaId: string, atletaId: string, formData: FormData) {
   await colocarEmOutraEquipa(equipaId, atletaId, formData, false);
 }
+
+/**
+ * Vincula um ou múltiplos atletas já cadastrados a uma equipa
+ */
+export async function vincularAtletasExistentes(equipaId: string, formData: FormData) {
+  const { supabase, perfil } = await obterPerfil();
+  if (!podeEditar(perfil.papel, "equipas")) {
+    voltarEquipa(equipaId, "erro", "Você não tem permissão para editar equipas.");
+  }
+
+  // Coleta IDs selecionados
+  const atletaIds = formData.getAll("atleta_ids").map(String).filter(Boolean);
+  const atletaUnico = texto(formData, "atleta_id");
+  if (atletaUnico && !atletaIds.includes(atletaUnico)) {
+    atletaIds.push(atletaUnico);
+  }
+
+  if (atletaIds.length === 0) {
+    voltarEquipa(equipaId, "erro", "Selecione ao menos um atleta para incluir na equipa.");
+  }
+
+  // Verifica se a equipa pertence ao clube do usuário
+  const { data: equipa } = await supabase
+    .from("equipas")
+    .select("id, nome")
+    .eq("id", equipaId)
+    .eq("clube_id", perfil.clube_id)
+    .single();
+
+  if (!equipa) {
+    return voltarEquipa(equipaId, "erro", "Equipa não encontrada.");
+  }
+
+  const registrosParaInserir = atletaIds.map((id) => {
+    const camisaStr = formData.get(`camisa_${id}`);
+    const camisa = camisaStr ? Number(camisaStr) : null;
+    return {
+      equipa_id: equipaId,
+      usuario_id: id,
+      numero_camisa: camisaValida(camisa) ? camisa : null,
+    };
+  });
+
+  const { error } = await supabase
+    .from("membros_equipa")
+    .upsert(registrosParaInserir, { onConflict: "equipa_id,usuario_id" });
+
+  if (error) {
+    console.error("Erro ao vincular atletas:", error);
+    return voltarEquipa(equipaId, "erro", "Não foi possível vincular os atletas à equipa: " + error.message);
+  }
+
+  revalidatePath(`/equipas/${equipaId}`);
+  revalidatePath("/equipas");
+  revalidatePath("/dados");
+  revalidatePath("/utilizadores");
+
+  voltarEquipa(
+    equipaId,
+    "aviso",
+    `${atletaIds.length} atleta(s) incluído(s) com sucesso na equipa ${equipa?.nome ?? ""}!`
+  );
+}
+
+/**
+ * Vincula um atleta a uma equipa a partir da ficha do próprio atleta (/atletas/[id])
+ */
+export async function vincularAtletaEquipa(atletaId: string, formData: FormData) {
+  const { supabase, perfil } = await obterPerfil();
+  if (!podeEditar(perfil.papel, "equipas")) {
+    redirect(`/atletas/${atletaId}?erro=${encodeURIComponent("Você não tem permissão para editar equipas.")}`);
+  }
+
+  const equipaId = texto(formData, "equipa_id");
+  if (!equipaId) {
+    redirect(`/atletas/${atletaId}?erro=${encodeURIComponent("Selecione a equipa para vincular o atleta.")}`);
+  }
+
+  const camisa = numero(formData, "camisa");
+  if (!camisaValida(camisa)) {
+    redirect(`/atletas/${atletaId}?erro=${encodeURIComponent("O número da camisa deve ser entre 1 e 99.")}`);
+  }
+
+  const { error } = await supabase.from("membros_equipa").upsert(
+    { equipa_id: equipaId, usuario_id: atletaId, numero_camisa: camisa },
+    { onConflict: "equipa_id,usuario_id" }
+  );
+
+  if (error) {
+    redirect(`/atletas/${atletaId}?erro=${encodeURIComponent("Não foi possível vincular o atleta à equipa.")}`);
+  }
+
+  revalidatePath(`/atletas/${atletaId}`);
+  revalidatePath(`/equipas/${equipaId}`);
+  revalidatePath("/equipas");
+  revalidatePath("/dados");
+
+  redirect(`/atletas/${atletaId}?aviso=${encodeURIComponent("Atleta vinculado à equipa com sucesso!")}`);
+}
+
+/**
+ * Desvincula um atleta de uma equipa a partir da ficha do atleta
+ */
+export async function desvincularAtletaEquipa(atletaId: string, equipaId: string) {
+  const { supabase, perfil } = await obterPerfil();
+  if (!podeEditar(perfil.papel, "equipas")) {
+    redirect(`/atletas/${atletaId}?erro=${encodeURIComponent("Você não tem permissão para editar equipas.")}`);
+  }
+
+  const { error } = await supabase
+    .from("membros_equipa")
+    .delete()
+    .eq("equipa_id", equipaId)
+    .eq("usuario_id", atletaId);
+
+  if (error) {
+    redirect(`/atletas/${atletaId}?erro=${encodeURIComponent("Não foi possível remover o atleta da equipa.")}`);
+  }
+
+  revalidatePath(`/atletas/${atletaId}`);
+  revalidatePath(`/equipas/${equipaId}`);
+  revalidatePath("/equipas");
+  revalidatePath("/dados");
+
+  redirect(`/atletas/${atletaId}?aviso=${encodeURIComponent("Atleta removido da equipa.")}`);
+}
+
+/**
+ * Vincula todos os atletas sem equipa de uma vez para a equipa indicada
+ */
+export async function vincularTodosSemEquipa(equipaId: string) {
+  const { supabase, perfil } = await obterPerfil();
+  if (!podeEditar(perfil.papel, "equipas")) {
+    redirect("/equipas?erro=" + encodeURIComponent("Você não tem permissão para editar equipas."));
+  }
+
+  // Busca todos os atletas do clube
+  const { data: todosAtletas } = await supabase
+    .from("usuarios")
+    .select("id, membros_equipa(equipa_id)")
+    .eq("clube_id", perfil.clube_id)
+    .eq("papel", "atleta")
+    .eq("ativo", true);
+
+  const semEquipa = (todosAtletas ?? []).filter(
+    (a: any) => !a.membros_equipa || a.membros_equipa.length === 0
+  );
+
+  if (semEquipa.length === 0) {
+    redirect(`/equipas/${equipaId}?aviso=${encodeURIComponent("Não há atletas sem equipa no clube.")}`);
+  }
+
+  const registros = semEquipa.map((a: any) => ({
+    equipa_id: equipaId,
+    usuario_id: a.id,
+    numero_camisa: null,
+  }));
+
+  const { error } = await supabase
+    .from("membros_equipa")
+    .upsert(registros, { onConflict: "equipa_id,usuario_id" });
+
+  if (error) {
+    redirect(`/equipas/${equipaId}?erro=${encodeURIComponent("Erro ao vincular atletas: " + error.message)}`);
+  }
+
+  revalidatePath(`/equipas/${equipaId}`);
+  revalidatePath("/equipas");
+  revalidatePath("/dados");
+
+  redirect(
+    `/equipas/${equipaId}?aviso=${encodeURIComponent(
+      `${semEquipa.length} atleta(s) que estavam sem equipa foram vinculados a esta equipa com sucesso!`
+    )}`
+  );
+}
+

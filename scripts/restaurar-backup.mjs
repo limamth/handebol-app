@@ -14,9 +14,14 @@ import { pathToFileURL } from "node:url";
 import { createClient } from "@supabase/supabase-js";
 
 export const ORDEM_RESTAURACAO = [
-  "clubes", "usuarios", "configuracoes_modulos", "equipas", "membros_equipa", "diagramas", "exercicios", "sessoes", "sessao_exercicios", "presencas",
+  "clubes", "usuarios", "configuracoes_modulos", "configuracao_lembretes", "campos_cadastro_atleta", "dados_cadastrais_atleta", "equipas", "membros_equipa", "diagramas", "exercicios", "sessoes", "sessao_exercicios", "presencas",
   "definicoes_teste", "resultados_teste", "questionarios", "respostas_questionario", "fases_treinamento", "fase_convocados",
   "rpe_sessao", "sessoes_forca", "shootout_goleiros", "shootout_sessoes", "shootout_batidas",
+  "equipes_adversarias", "atletas_adversarios", "scout_finalizacoes_adversario",
+  "equipes_analise", "atletas_equipe_analise", "partidas_analise", "acoes_partida",
+  "projetos_video", "tags_video", "playlists_video",
+  "apresentacoes", "apresentacao_slides",
+  "push_subscriptions", "notificacoes_historico",
 ];
 const COLUNAS_GERADAS = { rpe_sessao: ["carga_ua"], sessoes_forca: ["carga_ua"] };   // calculadas pelo banco
 const ALFABETO = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";

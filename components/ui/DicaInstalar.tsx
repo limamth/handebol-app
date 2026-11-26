@@ -32,6 +32,27 @@ export function DicaInstalar({ aberto = false }: { aberto?: boolean }) {
           </ol>
         </div>
         <p className="text-suave">Depois é só abrir pelo ícone “Handebol Hub” na tela inicial: o app abre em tela cheia, como um aplicativo, sem precisar de loja.</p>
+
+        <div className="border-t border-linha pt-3 space-y-2">
+          <p className="font-medium">Como ligar as notificações no celular</p>
+          <p className="text-suave">
+            As notificações <strong>não são automáticas</strong> ao instalar — você precisa autorizar uma única vez:
+          </p>
+          <ol className="list-decimal space-y-1 pl-5">
+            <li>
+              <strong>Abra o app pelo ícone</strong> na tela inicial do celular (no iPhone, as notificações só funcionam depois de abrir o app instalado, não direto pelo Safari).
+            </li>
+            <li>
+              No topo da tela, toque em <strong>“Ativar agora”</strong> no aviso <em>Ativar Lembretes no Celular</em>.
+            </li>
+            <li>
+              Quando o celular perguntar, toque em <strong>“Permitir”</strong>.
+            </li>
+          </ol>
+          <p className="text-xs text-suave">
+            Se tiver negado sem querer: no <strong>iPhone</strong> acesse <em>Ajustes → Notificações → Handebol Hub</em> e ative; no <strong>Android</strong> abra as informações do app/site no Chrome e mude <em>Notificações</em> para <em>Permitir</em>.
+          </p>
+        </div>
       </div>
     </details>
   );

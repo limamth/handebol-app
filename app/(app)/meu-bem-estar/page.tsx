@@ -5,7 +5,7 @@ import { hojeChave } from "@/lib/periodo";
 import { dataBr } from "@/lib/fases";
 import { ESCALA_BEM_ESTAR, PERGUNTAS_BEM_ESTAR } from "@/lib/monitorizacao";
 import { Aviso } from "@/components/ui/Aviso";
-import { salvarMeuBemEstar } from "./actions";
+import { FormularioBemEstar } from "@/components/bem-estar/FormularioBemEstar";
 
 export default async function MeuBemEstar({ searchParams }: { searchParams: { aviso?: string; erro?: string } }) {
   const { supabase, perfil } = await obterPerfil();
@@ -54,23 +54,12 @@ export default async function MeuBemEstar({ searchParams }: { searchParams: { av
       <p className="text-sm">{hojeResp ? "Você já respondeu hoje. Se algo mudou, pode corrigir e salvar de novo." : "Responda como você está hoje. Leva menos de um minuto."}</p>
       <p className="text-sm text-suave">{ESCALA_BEM_ESTAR}</p>
 
-      <form action={salvarMeuBemEstar} className="space-y-5 rounded-lg border border-linha bg-white p-5">
-        {perguntas.map((p) => (
-          <fieldset key={p.chave}>
-            <legend className="font-medium">{p.pergunta}</legend>
-            {p.dica && <p className="mb-2 text-xs text-suave">{p.dica}</p>}
-            <div className="flex gap-2">
-              {[1, 2, 3, 4, 5].map((n) => (
-                <label key={n} className="flex-1">
-                  <input type="radio" name={`r_${p.chave}`} value={n} required defaultChecked={respostas[p.chave] === n} className="peer sr-only" />
-                  <span className="block cursor-pointer rounded-md border border-linha py-3 text-center peer-checked:border-quadra-600 peer-checked:bg-quadra-600 peer-checked:text-white peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-bola-500">{n}</span>
-                </label>
-              ))}
-            </div>
-          </fieldset>
-        ))}
-        <button className="w-full rounded-md bg-bola-500 py-3 font-semibold text-white hover:opacity-90">{hojeResp ? "Atualizar resposta de hoje" : "Salvar bem-estar de hoje"}</button>
-      </form>
+      <FormularioBemEstar
+        perguntas={perguntas}
+        respostasIniciais={respostas}
+        jaRespondeu={!!hojeResp}
+        dia={hoje}
+      />
     </div>
   );
 }

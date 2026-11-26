@@ -2,9 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Film } from "lucide-react";
 import { Quadra, FichaSvg, BolaSvg, SetaSvg } from "./Quadra";
 import { QUADRA, type DadosTaticos, type Frame, type Seta } from "@/lib/prancheta";
 import { salvarDiagrama } from "@/app/(app)/prancheta/actions";
+import { ModalExportarPrancheta } from "./ModalExportarPrancheta";
 
 const { comprimento: L, largura: W } = QUADRA;
 const clamp = (v: number) => Math.min(1.05, Math.max(-0.05, v));
@@ -25,6 +27,7 @@ export function EditorTatico({ id, tituloInicial, dadosIniciais, somenteLeitura 
   const [tocando, setTocando] = useState(false);
   const [salvando, setSalvando] = useState(false);
   const [aviso, setAviso] = useState<{ tipo: "ok" | "erro"; msg: string } | null>(null);
+  const [modalExportarAberto, setModalExportarAberto] = useState(false);
 
   const frame = frames[atual];
   const editavel = !somenteLeitura && !tocando;
@@ -105,6 +108,14 @@ export function EditorTatico({ id, tituloInicial, dadosIniciais, somenteLeitura 
         <label className="min-w-64 flex-1 text-sm font-medium">Nome da jogada
           <input value={titulo} onChange={(e) => setTitulo(e.target.value)} disabled={somenteLeitura} placeholder="Ex.: Entrada de pivô pelo lado esquerdo" className="mt-1 w-full rounded-md border border-linha bg-white px-3 py-2.5" />
         </label>
+        <button
+          type="button"
+          onClick={() => setModalExportarAberto(true)}
+          className="flex items-center gap-1.5 rounded-md border border-linha bg-white px-4 py-2.5 font-semibold text-tinta hover:bg-fundo hover:border-quadra-600 shadow-sm"
+        >
+          <Film className="h-4 w-4 text-bola-500" />
+          <span>Exportar GIF</span>
+        </button>
         {!somenteLeitura && (
           <button onClick={salvar} disabled={salvando || !titulo.trim()} className="rounded-md bg-bola-500 px-5 py-2.5 font-semibold text-white hover:opacity-90 disabled:opacity-40">
             {salvando ? "Salvando..." : "Salvar jogada"}
@@ -150,6 +161,14 @@ export function EditorTatico({ id, tituloInicial, dadosIniciais, somenteLeitura 
         Arraste as fichas e a bola. Para mostrar o movimento, use <strong>Novo quadro</strong> (copia as posições atuais) e mova as fichas: ao reproduzir, elas deslizam de um quadro para o outro.
         Azul é o ataque, laranja é a defesa, G é o goleiro.
       </p>
+
+      <ModalExportarPrancheta
+        titulo={titulo}
+        frames={frames}
+        quadroAtual={atual}
+        aberto={modalExportarAberto}
+        aoFechar={() => setModalExportarAberto(false)}
+      />
     </div>
   );
 }

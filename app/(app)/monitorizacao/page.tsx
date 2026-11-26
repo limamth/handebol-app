@@ -1,20 +1,25 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { obterPerfil } from "@/lib/sessao";
-import { podeVer } from "@/lib/permissions";
+import { podeVer, podeEditar } from "@/lib/permissions";
 import { calcularMonitorizacao, carregarDia, convocadosDoDia, fmt1, garantirQuestionario, LIMITES, ROTULO_NOTA_DORES } from "@/lib/monitorizacao";
 import { hojeChave, somarDias } from "@/lib/periodo";
 import { dataLonga } from "@/lib/datas";
 import { GraficoCarga } from "@/components/dashboard/GraficoCarga";
 import { CartaoIndicador } from "@/components/dashboard/CartaoIndicador";
+import { Aviso } from "@/components/ui/Aviso";
+import { PainelLembreteBemEstar } from "@/components/monitorizacao/PainelLembreteBemEstar";
+import { carregarConfiguracaoLembretes, buscarAtletasPendentesBemEstar } from "@/lib/notificacoes";
+import { dispararLembreteManual, atualizarHorarioLembrete } from "./actions";
 
 const botao = "rounded-md border border-linha bg-white px-3 py-2 text-sm hover:bg-fundo";
 const dataBr = (d: string) => d.split("-").reverse().join("/");
 const media = (v: number[]) => v.reduce((a, b) => a + b, 0) / v.length;
 
-export default async function Monitorizacao({ searchParams }: { searchParams: { equipa?: string; data?: string; todos?: string } }) {
+export default async function Monitorizacao({ searchParams }: { searchParams: { equipa?: string; data?: string; todos?: string; aviso?: string; erro?: string } }) {
   const { supabase, perfil } = await obterPerfil();
   if (!podeVer(perfil.papel, "monitorizacao")) redirect("/dashboard");
+  const podeGerenciar = podeEditar(perfil.papel, "monitorizacao");
 
   const hoje = hojeChave();
   const equipaId = searchParams.equipa || undefined;
@@ -35,10 +40,12 @@ export default async function Monitorizacao({ searchParams }: { searchParams: { 
   let recentes = supabase.from("sessoes").select("id, titulo, inicio, equipas(nome)").lte("inicio", new Date().toISOString()).order("inicio", { ascending: false }).limit(6);
   if (equipaId) recentes = recentes.eq("equipa_id", equipaId);
 
-  const [{ linhas }, carga, { data: sessoes }] = await Promise.all([
+  const [{ linhas }, carga, { data: sessoes }, configLembretes, pendenciasLembretes] = await Promise.all([
     carregarDia(supabase, equipaId, dia, filtroDia),
     calcularMonitorizacao(supabase, equipaId, filtroHoje),
     recentes,
+    carregarConfiguracaoLembretes(supabase, perfil.clube_id),
+    buscarAtletasPendentesBemEstar(supabase, perfil.clube_id, hoje),
   ]);
 
   const responderam = linhas.filter((l) => l.respostas);
@@ -48,6 +55,8 @@ export default async function Monitorizacao({ searchParams }: { searchParams: { 
 
   return (
     <div className="mx-auto max-w-6xl space-y-8">
+      <Aviso key={Date.now()} mensagem={searchParams.erro ?? searchParams.aviso} tipo={searchParams.erro ? "erro" : "ok"} />
+
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="font-titulo text-3xl font-bold">Monitorização</h1>
@@ -67,6 +76,15 @@ export default async function Monitorizacao({ searchParams }: { searchParams: { 
           <Link href="/monitorizacao/fases" className={botao}>Fases de treinamento</Link>
         </div>
       </div>
+
+      {/* Painel de Lembretes Diários para Atletas Convocados em Fase Ativa */}
+      <PainelLembreteBemEstar
+        configuracao={configLembretes}
+        pendencias={pendenciasLembretes}
+        podeEditar={podeGerenciar}
+        onSalvarHorario={atualizarHorarioLembrete}
+        onDispararManual={dispararLembreteManual}
+      />
 
       <section aria-label="Acompanhamento do dia" className="space-y-4">
         <div className="flex flex-wrap items-center gap-3">

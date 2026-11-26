@@ -5,6 +5,7 @@ import { podeEditar } from "@/lib/permissions";
 import { Aviso } from "@/components/ui/Aviso";
 import { POSICOES } from "@/lib/modalidade";
 import { adicionarEmOutraEquipa, atualizarCamisa, atualizarEquipa, cadastrarAtleta, excluirEquipa, moverParaEquipa, removerDaEquipa } from "../actions";
+import { PainelIncluirAtletasEquipa } from "@/components/equipas/PainelIncluirAtletasEquipa";
 
 const campo = "mt-1 w-full rounded-md border border-linha bg-white px-3 py-2.5";
 
@@ -15,15 +16,19 @@ export default async function DetalheEquipa({ params, searchParams }: { params: 
   const { data: equipa } = await supabase.from("equipas").select("id, nome, categoria, genero").eq("id", params.id).single();
   if (!equipa) notFound();
 
-  const [{ data: membros }, { data: outras }, { count: totalSessoes }] = await Promise.all([
+  const [{ data: membros }, { data: outras }, { count: totalSessoes }, { data: todosAtletas }] = await Promise.all([
     supabase.from("membros_equipa").select("numero_camisa, usuarios(id, nome, posicao, ano_nascimento)").eq("equipa_id", params.id),
     supabase.from("equipas").select("id, nome").neq("id", params.id).order("nome"),
     supabase.from("sessoes").select("id", { count: "exact", head: true }).eq("equipa_id", params.id),
+    supabase.from("usuarios").select("id, nome, posicao, ano_nascimento, membros_equipa(equipa_id)").eq("clube_id", perfil.clube_id).eq("papel", "atleta").eq("ativo", true).order("nome"),
   ]);
 
   const lista = ((membros ?? []) as any[])
     .map((m) => ({ ...m.usuarios, camisa: m.numero_camisa }))
     .sort((a, b) => a.nome.localeCompare(b.nome));
+
+  const idsJaMembros = new Set(lista.map((a) => a.id));
+  const atletasDisponiveis = ((todosAtletas ?? []) as any[]).filter((a) => !idsJaMembros.has(a.id));
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">
@@ -119,28 +124,42 @@ export default async function DetalheEquipa({ params, searchParams }: { params: 
         </table>
       </section>
 
+      {editar && atletasDisponiveis.length > 0 && (
+        <PainelIncluirAtletasEquipa
+          equipaId={equipa.id}
+          equipaNome={equipa.nome}
+          atletasDisponiveis={atletasDisponiveis}
+        />
+      )}
+
       {editar && (
-        <form action={cadastrarAtleta.bind(null, equipa.id)} className="grid max-w-2xl gap-4 rounded-lg border border-linha bg-white p-5 sm:grid-cols-2">
-          <h2 className="font-titulo text-xl font-semibold sm:col-span-2">Cadastrar atleta</h2>
-          <label className="block text-sm font-medium sm:col-span-2">Nome completo
-            <input name="nome" required className={campo} />
-          </label>
-          <label className="block text-sm font-medium">Posição
-            <select name="posicao" className={campo}>
-              <option value="">Não informar</option>
-              {POSICOES.map((p) => <option key={p}>{p}</option>)}
-            </select>
-          </label>
-          <label className="block text-sm font-medium">Ano de nascimento
-            <input name="ano" type="number" min={1950} max={2020} className={campo} />
-          </label>
-          <label className="block text-sm font-medium">Número da camisa
-            <input name="camisa" type="number" min={1} max={99} className={campo} />
-          </label>
-          <div className="flex items-end">
-            <button className="rounded-md bg-bola-500 px-5 py-2.5 font-semibold text-white hover:opacity-90">Cadastrar atleta</button>
-          </div>
-        </form>
+        <details className="rounded-lg border border-linha bg-white p-5">
+          <summary className="cursor-pointer font-titulo text-xl font-semibold">
+            Cadastrar novo atleta (criar novo cadastro)
+          </summary>
+          <form action={cadastrarAtleta.bind(null, equipa.id)} className="mt-4 grid max-w-2xl gap-4 sm:grid-cols-2">
+            <label className="block text-sm font-medium sm:col-span-2">Nome completo
+              <input name="nome" required className={campo} />
+            </label>
+            <label className="block text-sm font-medium">Posição
+              <select name="posicao" className={campo}>
+                <option value="">Não informar</option>
+                {POSICOES.map((p) => <option key={p}>{p}</option>)}
+              </select>
+            </label>
+            <label className="block text-sm font-medium">Ano de nascimento
+              <input name="ano" type="number" min={1950} max={2020} className={campo} />
+            </label>
+            <label className="block text-sm font-medium">Número da camisa
+              <input name="camisa" type="number" min={1} max={99} className={campo} />
+            </label>
+            <div className="sm:col-span-2 pt-2">
+              <button className="rounded-md bg-bola-500 px-5 py-2.5 font-semibold text-white hover:opacity-90">
+                Cadastrar e vincular à equipa
+              </button>
+            </div>
+          </form>
+        </details>
       )}
     </div>
   );

@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 
 const ABAS = [
   { href: "/shootout", rotulo: "Visão geral", exato: true },
+  { href: "/scout", rotulo: "Scout Adversários" },
   { href: "/shootout/ranking", rotulo: "Ranking" },
   { href: "/shootout/fases", rotulo: "Fases" },
   { href: "/shootout/batidas", rotulo: "Batidas" },

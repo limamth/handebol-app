@@ -28,9 +28,7 @@ export default async function DetalheExercicio({ params, searchParams }: { param
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <Aviso key={Date.now()} mensagem={searchParams.erro} tipo="erro" />
-      {ehAtleta
-        ? <Link href="/calendario" className="text-sm text-quadra-600 underline">Voltar ao calendário</Link>
-        : <Link href="/biblioteca" className="text-sm text-quadra-600 underline">Voltar para exercícios</Link>}
+      <Link href="/biblioteca" className="text-sm text-quadra-600 underline">Voltar para exercícios</Link>
 
       <header>
         <span className={`inline-block rounded px-2 py-0.5 text-xs ${COR_OBJETIVO[e.objetivo]}`}>{ROTULO_OBJETIVO[e.objetivo]}</span>

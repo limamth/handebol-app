@@ -17,5 +17,5 @@ export const DESCRICAO_PAPEL: Record<Papel, string> = {
 export const ROTULO_MODULO = {
   equipas: "Equipas", calendario: "Calendário", biblioteca: "Exercícios", prancheta: "Prancheta",
   monitorizacao: "Monitorização", avaliacoes: "Avaliações", estatisticas: "Estatísticas",
-  utilizadores: "Utilizadores", musculacao: "Musculação", bemestar: "Meu bem-estar", dores: "Dores", shootout: "Shoot-out", backup: "Backup", configuracoes: "Configurações",
+  utilizadores: "Utilizadores", musculacao: "Musculação", bemestar: "Meu bem-estar", dores: "Dores", shootout: "Shoot-out", scout: "Scout", analise_jogo: "Análise ao Vivo", video: "Vídeo & Tagging", apresentacoes: "Apresentações", dados: "Dados", backup: "Backup", configuracoes: "Configurações",
 } as const;
