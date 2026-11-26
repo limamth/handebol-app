@@ -28,7 +28,11 @@ async function lerTabela(supabase: SupabaseClient, tabela: string) {
     let q: any = supabase.from(tabela).select("*").range(de, de + 999);
     for (const c of colunas) q = q.order(c);
     const { data, error } = await q;
-    if (error) throw new Error(`${tabela}: ${error.message}`);
+    if (error) {
+      // Se alguma tabela opcional/nova ainda não foi criada por migration, não aborta o backup inteiro
+      if (error.code === "PGRST205" || error.code === "42P01") return [];
+      throw new Error(`${tabela}: ${error.message}`);
+    }
     linhas.push(...(data ?? []));
     if ((data?.length ?? 0) < 1000) break;
   }
@@ -36,11 +40,21 @@ async function lerTabela(supabase: SupabaseClient, tabela: string) {
 }
 
 export async function gerarBackup(supabase: SupabaseClient) {
+  // Lê em lotes paralelos para evitar timeout de função serverless (38 consultas sequenciais demoravam >10s)
+  const resultados = new Map<string, any[]>();
+  const TAMANHO_LOTE = 10;
+  for (let i = 0; i < TABELAS_BACKUP.length; i += TAMANHO_LOTE) {
+    const lote = TABELAS_BACKUP.slice(i, i + TAMANHO_LOTE);
+    const lidos = await Promise.all(lote.map(async (t) => [t, await lerTabela(supabase, t)] as const));
+    for (const [t, linhas] of lidos) resultados.set(t, linhas);
+  }
+
   const tabelas: Record<string, any[]> = {};
   const contagens: Record<string, number> = {};
   for (const t of TABELAS_BACKUP) {
-    tabelas[t] = await lerTabela(supabase, t);
-    contagens[t] = tabelas[t].length;
+    const linhas = resultados.get(t) ?? [];
+    tabelas[t] = linhas;
+    contagens[t] = linhas.length;
   }
   const total = Object.values(contagens).reduce((a, b) => a + b, 0);
   const arquivo = { formato: "handebol-hub-backup", versao: 1, gerado_em: new Date().toISOString(), contagens, tabelas };
